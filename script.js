@@ -361,6 +361,10 @@ function populateDetailsPage() {
     if (countryLanguages) {
         countryLanguages.textContent = params.languages || "";
     }
+    
+    if (countryCurrencies) {
+        countryCurrencies.textContent = params.currencies || "";
+    }
 }
 
 function setupDetailsPage() {
