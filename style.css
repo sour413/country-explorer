@@ -108,7 +108,7 @@ header {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
     overflow: hidden;
     display: flex;
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
     flex-direction: column;
     justify-content: flex-start;
     gap: 12px;
