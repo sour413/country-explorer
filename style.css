@@ -1,0 +1,200 @@
+header {
+    background-color: #333333;
+    color: white;
+    width: 100%;
+    height: 120px;
+    padding: 6px;
+    font-size: medium;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.controls-row {
+    display: flex;
+    gap: 24px;
+    justify-content: start;
+    align-items: flex-start;
+    padding: 32px;
+}
+
+.controls-row label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: min(300px, 100%);
+    padding: 0.5rem;
+}
+
+.controls-row input,
+.controls-row select {
+    min-width: 180px;
+}
+
+@media (max-width: 640px) {
+    .controls-row {
+        flex-direction: column;
+        gap: 8px;
+        padding: 10px;
+    }
+    .controls-row input,
+    .controls-row select {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+/* Form controls: text inputs, number inputs and selects */
+.filter-fields {
+    font-family: inherit;
+    font-size: 16px;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #fff;
+    color: #222;
+    outline: none;
+    transition:
+        border-color 150ms ease,
+        box-shadow 150ms ease;
+    box-sizing: border-box;
+}
+
+.filter-fields:focus {
+    border-color: #1e90ff;
+    box-shadow: 0 0 0 4px rgba(30, 144, 255, 0.12);
+}
+
+.filter-fields.invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.16);
+}
+
+.input-error-message {
+    display: none;
+    color: #842029;
+    font-size: 0.9rem;
+    margin-top: 6px;
+}
+
+.input-error-message.visible {
+    display: block;
+}
+
+.filter-fields {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: 30px; /* make room for native dropdown arrow */
+}
+
+.population-max {
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+}
+
+#country-cards-container {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-rows: minmax(260px, auto);
+    gap: 20px;
+    padding: 24px;
+}
+
+.country-card {
+    background: #e0e0e0;
+    border-radius: 6px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    display: flex;
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 20px 20px 32px;
+}
+
+.country-card img {
+    width: 200px;
+    height: 105px;
+    object-fit: cover;
+}
+
+.country-card h2 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.country-card p {
+    margin: 0;
+    line-height: 4.32px;
+    color: #333;
+}
+
+.show-more {
+    display: block;
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #333333;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 150ms ease;
+}
+
+.error-message {
+    display: inline-block;
+    width: 100%;
+    height: 15%;
+    padding: 18px 22px;
+    background-color: #f8d7da;
+    color: #842029;
+    border: 1px solid #f5c2c7;
+    border-radius: 12px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.country-details {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    grid-template-columns: 1fr;
+    align-items: center;
+}
+
+.country-details img {
+    width: 380px;
+    height:auto;
+    box-shadow: 0 0 20px 24px rgba(0, 0, 0, 0.08);
+    object-fit: cover;
+}
+
+.details-list {
+   padding:0;
+   line-height: 4.32px;
+}
+
+/* Small responsive tweak */
+@media (max-width: 480px) {
+    .filter-fields {
+        font-size: 14px;
+        padding: 6px 8px;
+    }
+}
+
+@media (max-width: 1024px) {
+    #country-cards-container {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 620px) {
+    #country-cards-container {
+        grid-template-columns: 1fr;
+    }
+}

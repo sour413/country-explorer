@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Country Explorer</title>
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <header>
+            <img src="assets/world.png" class="world-icon" alt="World Icon" />
+            <h1 class="country-title">Country Explorer</h1>
+        </header>
+        <main>
+            <div class="controls-row">
+                <div>
+                    <label for="search-input">Select by Country Name:</label>
+                    <input
+                        type="text"
+                        class="filter-fields"
+                        id="search-input"
+                        placeholder="Search countries..."
+                        pattern="[A-Za-zÀ-ž' \-]*"
+                        title="Enter valid country name" />
+                    <span id="search-error" class="input-error-message"
+                        >Enter valid Country Name.</span
+                    >
+                </div>
+                <div>
+                    <label for="region-select">Select a Region:</label>
+                    <select class="filter-fields" id="region-select">
+                        <option value="">All Regions</option>
+                        <option value="Africa">Africa</option>
+                        <option value="Americas">Americas</option>
+                        <option value="Asia">Asia</option>
+                        <option value="Europe">Europe</option>
+                        <option value="Oceania">Oceania</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="min-population">Min population</label>
+                    <input
+                        type="number"
+                        id="min-population"
+                        placeholder="0"
+                        class="filter-fields"
+                        min="0"
+                        max="1500000000" /><br />
+                    <span id="population-error" class="input-error-message">
+                        Country’s population cannot be greater than 1.5 billion.
+                    </span>
+                    <span class="population-max"
+                        >Max - 1.5 Billion (1500000000)</span
+                    >
+                </div>
+            </div>
+            <div id="country-cards-container"></div>
+            <button class="show-more" id="show-more">Show More</button>
+        </main>
+    </body>
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</html>
