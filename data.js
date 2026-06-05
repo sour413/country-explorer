@@ -83,8 +83,8 @@ let data = [
       "region": "Europe",
       "population": 4994724,
       "flags": {
-          "svg": "./assets/ireland.svg",
-          "png": "./assets/ireland.png"
+          "svg": "./assets/Ireland.svg",
+          "png": "./assets/Ireland.png"
       },
       "currencies": [
           {
@@ -747,8 +747,8 @@ let data = [
       "region": "Americas",
       "population": 1380004385,
       "flags": {
-          "svg": "./assets/colombia.svg",
-          "png": "./assets/colombia.png"
+          "svg": "./assets/Colombia.svg",
+          "png": "./assets/Colombia.png"
       },
       "currencies": [
           {
