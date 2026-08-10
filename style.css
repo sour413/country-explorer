@@ -22,13 +22,13 @@ header {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    width: min(300px, 100%);
+    width: min(20rem, 100%);
     padding: 0.5rem;
 }
 
 .controls-row input,
 .controls-row select {
-    min-width: 180px;
+    min-width: 15rem;
 }
 
 @media (max-width: 640px) {
