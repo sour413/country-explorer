@@ -69,26 +69,26 @@ function handleRequest(req, res) {
     if (filePath === "./countries" && req.method === "GET") {
         // 1.1. Call the fetchCountries() function
         fetchCountries()
-            .then(function (data) {
-                // 1.2. Define the resolve callback function:
-                if (data) {
-                    // 1.2.1. IF data returned successfully
-                    res.writeHead(200, { "Content-Type": "application/json" });
-                    res.end(JSON.stringify(data));
-                } else {
-                    // 1.2.2. Else IF data is null
-                    res.writeHead(500, { "Content-Type": "application/json" });
-                    res.end(
-                        JSON.stringify({ message: "Response data is null" }),
-                    );
-                }
-            })
-            .catch(function (error) {
-                // 1.3. Define the reject callback function:
-                console.error(error); // 1.3.1. Log error to console
-                res.writeHead(500, { "Content-Type": "application/json" }); // 1.3.2. SET status code to 500
-                res.end(JSON.stringify({ message: "Failed to fetch data" })); // 1.3.3. Send error message
-            });
+        .then(function (data) {
+            // 1.2. Define the resolve callback function:
+            if (data) {
+                // 1.2.1. IF data returned successfully
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify(data));
+            } else {
+                // 1.2.2. Else IF data is null
+                res.writeHead(500, { "Content-Type": "application/json" });
+                res.end(
+                    JSON.stringify({ message: "Response data is null" }),
+                );
+            }
+        })
+        .catch(function (error) {
+            // 1.3. Define the reject callback function:
+            console.error(error); // 1.3.1. Log error to console
+            res.writeHead(500, { "Content-Type": "application/json" }); // 1.3.2. SET status code to 500
+            res.end(JSON.stringify({ message: "Failed to fetch data" })); // 1.3.3. Send error message
+        });
     }
 }
 
