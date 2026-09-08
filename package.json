@@ -1,0 +1,25 @@
+{
+    "name": "country_explorer",
+    "version": "1.0.0",
+    "main": "server.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "nodemon server.js -e ejs, js, css, html, jpg, png, scss"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/sour413/country-explorer.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/sour413/country-explorer/issues"
+    },
+    "homepage": "https://github.com/sour413/country-explorer#readme",
+    "description": "",
+    "dependencies": {
+        "express": "^5.2.1",
+        "helmet": "^8.3.0"
+    }
+}
