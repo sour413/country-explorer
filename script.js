@@ -1,7 +1,80 @@
-// Define the number of countries to display and the increment step.
+// Define the number of data to display and the increment step.
 const INITIAL_DISPLAY_COUNT = 12;
+const displayIncrement = 12; // Fixes ReferenceError: displayIncrement is not defined
 let displayCount = INITIAL_DISPLAY_COUNT;
-const displayIncrement = 6;
+let allCountries = [];
+
+// function to fetch data from the server-side endpoint
+async function fetchData() {
+    const countryCardsContainer = document.getElementById("country-cards-container");
+    const showMoreBtn = document.getElementById("show-more-btn");
+
+    try {
+        // 1. Show loading state and hide "Show More" button temporarily
+        if (countryCardsContainer) {
+            countryCardsContainer.innerHTML = `
+                <div class="spinner-container">
+                    <div class="spinner"></div>
+                </div>
+            `;
+        }
+
+        if (showMoreBtn) {
+            showMoreBtn.style.display = "none";
+        }
+
+        const response = await fetch("/countries");
+
+        if (!response.ok) {
+            throw new Error("HTTP error! Status: " + response.status);
+        }
+
+        const data = await response.json();
+
+        // 3. Extract and store the array properly into allCountriesData
+        // Handles data wrapped in `{ data: { objects: [...] } }`, `{ objects: [...] }`, or a direct array `[...]`
+        if (Array.isArray(data)) {
+            allCountriesData = data;
+        } else if (data && Array.isArray(data.objects)) {
+            allCountriesData = data.objects;
+        } else if (data && data.data && Array.isArray(data.data.objects)) {
+            allCountriesData = data.data.objects;
+        } else {
+            allCountriesData = [];
+        }
+
+        // 4. Trigger initial rendering once data is ready
+        applyFilters(true);
+
+        return allCountriesData;
+    } catch (error) {
+        console.error("Error fetching countries data:", error);
+
+        // 4. Display error message to user if fetch fails
+        if (countryCardsContainer) {
+            countryCardsContainer.innerHTML = `
+                <p class="error-message">Failed to load country data. Please try again later.</p>
+            `;
+        }
+
+        throw error;
+    }
+}
+
+// 2. Separate event listener that runs when the DOM loads
+document.addEventListener("DOMContentLoaded", async function () {
+    try {
+        const data = await fetchData();
+    } catch (error) {
+        console.error("Error during initialization:", error);
+    }
+
+    // 2. Attach click event listener to the "Show More" button
+    const showMoreButton = document.getElementById("show-more-btn"); // Replace with your actual button ID
+    if (showMoreButton) {
+        showMoreButton.addEventListener("click", showMoreHandler);
+    }
+});
 
 /**
  * Normalize and format an array or object of names (currencies, languages).
@@ -44,107 +117,206 @@ function getFormattedNames(collection) {
     return String(collection);
 }
 
+// Helper function to format currencies
+function getFormattedCurrencies(currencies) {
+    if (!currencies) return "";
+
+    // If currencies is an Array of objects: [{ name: "Russian ruble", symbol: "₽" }]
+    if (Array.isArray(currencies)) {
+        return currencies
+            .map((c) => c.name || c)
+            .filter(Boolean)
+            .join(", ");
+    }
+
+    // If currencies is an Object map: { "RUB": { name: "Russian ruble" } }
+    if (typeof currencies === "object") {
+        return Object.keys(currencies)
+            .map((code) => currencies[code]?.name || currencies[code])
+            .filter(Boolean)
+            .join(", ");
+    }
+
+    return String(currencies);
+}
+
+// Helper function to format languages
+function getFormattedLanguages(languages) {
+    if (!languages) return "";
+
+    // If languages is an Array of objects: [{ name: "English" }, { name: "French" }]
+    if (Array.isArray(languages)) {
+        return languages
+            .map((l) => l.name || l.language || l)
+            .filter(Boolean)
+            .join(", ");
+    }
+
+    // If languages is an Object map: { "eng": "English" }
+    if (typeof languages === "object") {
+        return Object.keys(languages)
+            .map((code) => languages[code]?.name || languages[code])
+            .filter(Boolean)
+            .join(", ");
+    }
+
+    return String(languages);
+}
+
+// Function to populate country cards in the DOM
+function populateCountryCards(data) {
+    const countryCardsContainer = document.getElementById(
+        "country-cards-container",
+    );
+
+    if (countryCardsContainer) {
+        countryCardsContainer.innerHTML = "";
+    }
+
+    // Extract the array directly from data.data.objects
+    let countriesArray = [];
+    if (data && data.data && Array.isArray(data.data.objects)) {
+        countriesArray = data.data.objects;
+    } else if (Array.isArray(data)) {
+        countriesArray = data;
+    }
+
+    // Validate array content
+    if (!countriesArray || countriesArray.length === 0) {
+        if (countryCardsContainer) {
+            countryCardsContainer.innerHTML =
+                "<p class='error-message'>No data found. Please try a different search or selection.</p>";
+        }
+        return;
+    }
+
+    // Set the count limit to 12 or use displayCount if it's set to 12
+    const countToDisplay = typeof displayCount !== "undefined" ? displayCount : 12;
+    const itemsToDisplay = countriesArray.slice(0, countToDisplay);
+
+    itemsToDisplay.forEach(function (country) {
+        const card = document.createElement("div");
+        card.classList.add("country-card");
+
+        const flagImg = document.createElement("img");
+        const countryName = document.createElement("h2");
+        const capital = document.createElement("p");
+        const population = document.createElement("p");
+        const region = document.createElement("p");
+
+        // Property access based on logged object structure
+        const commonName =
+            country.names?.common ||
+            country.name?.common ||
+            country.name ||
+            "N/A";
+        const capitalName =
+            country.capitals?.[0]?.name || country.capitals?.name || "N/A";
+        const popValue = country.population
+            ? country.population.toLocaleString()
+            : "N/A";
+        const regionName = country.region || "N/A";
+        const flagSrc =
+            country.flag?.url_png ||
+            country.flag?.url_svg ||
+            (typeof country.flag === "string"
+                ? country.flag
+                : country.flags?.url_png || "");
+
+        flagImg.src = flagSrc;
+        flagImg.alt = commonName;
+        countryName.innerHTML = commonName;
+        capital.innerHTML = `<strong>Capital:</strong> ${capitalName}`;
+        population.innerHTML = `<strong>Population:</strong> ${popValue}`;
+        region.innerHTML = `<strong>Region:</strong> ${regionName}`;
+
+        card.appendChild(flagImg);
+        card.appendChild(countryName);
+        card.appendChild(capital);
+        card.appendChild(population);
+        card.appendChild(region);
+
+        card.style.cursor = "pointer";
+        card.addEventListener("click", () => countryCardHandler(country));
+
+        if (countryCardsContainer) {
+            countryCardsContainer.appendChild(card);
+        }
+    });
+}
+
 // Build a query string from a country object and navigate to the Details page
 function countryCardHandler(country) {
-    if (!country) return;
+    // Extract flag URL string
+    const flagUrl =
+        country.flag?.url_png ||
+        country.flag?.url_svg ||
+        (typeof country.flag === "string" ? country.flag : "");
 
-    const name = country.name && country.name.common ? country.name.common : "";
-    const capital = Array.isArray(country.capital)
-        ? country.capital.join(", ")
-        : country.capital || "";
-    const population = country.population ? String(country.population) : "";
-    const region = country.region || "";
-    const subregion = country.subregion || "";
-    const currencies = getFormattedNames(country.currencies);
-    const languages = getFormattedNames(country.languages);
-    const flag =
-        (country.flags && (country.flags.png || country.flags.svg)) || "";
+    // Extract capital name safely
+    const capitalName =
+        country.capitals?.[0]?.name ||
+        country.capitals?.name ||
+        (Array.isArray(country.capital)
+            ? country.capital[0]
+            : country.capital) ||
+        "";
 
-    const params = [
-        `name=${encodeURIComponent(name)}`,
-        `capital=${encodeURIComponent(capital)}`,
-        `population=${encodeURIComponent(population)}`,
-        `region=${encodeURIComponent(region)}`,
-        `subregion=${encodeURIComponent(subregion)}`,
-        `currencies=${encodeURIComponent(currencies)}`,
-        `languages=${encodeURIComponent(languages)}`,
-        `flag=${encodeURIComponent(flag)}`,
-    ].join("&");
+    // Format currencies and languages strings
+    const currenciesString = getFormattedCurrencies(country.currencies);
+    const languagesString = getFormattedLanguages(country.languages);
 
-    window.location.href = `details.html?${params}`;
+    // Build the query parameters with formatted strings
+    const queryParams = new URLSearchParams({
+        name: country.names.common,
+        capital: capitalName,
+        population: country.population,
+        region: country.region,
+        flag: flagUrl,
+        currencies: currenciesString,
+        languages: languagesString,
+    });
+
+    // Navigate to the Details page with the updated query parameters
+    window.location.href = `details.html?${queryParams.toString()}`;
 }
 
 // Filter the data based on the search term, region, and minimum population
 function filterData(searchTerm, region, minPopulation) {
-    // Validate the user input.
-    if (typeof searchTerm !== "string") {
-        searchTerm = "";
-    }
-
-    if (typeof region !== "string" || region === "All Regions") {
-        region = "";
-    }
-
-    if (
-        minPopulation === "" ||
-        minPopulation === null ||
-        minPopulation === undefined
-    ) {
-        minPopulation = null;
-    }
-
-    if (typeof minPopulation === "string") {
-        minPopulation = Number(minPopulation);
-    }
-
-    if (
-        typeof minPopulation !== "number" ||
-        Number.isNaN(minPopulation) ||
-        minPopulation < 0
-    ) {
-        minPopulation = null;
-    }
-
-    if (!Array.isArray(data)) {
+    if (!Array.isArray(allCountriesData)) {
         return [];
     }
 
-    return data.filter((country) => {
-        const countryName =
-            country.name && country.name.common
-                ? country.name.common.toLowerCase()
-                : "";
-
-        const searchLower = searchTerm.trim().toLowerCase();
-        const regionLower = region.trim().toLowerCase();
+    return allCountriesData.filter((country) => {
+        // Extract country name safely based on common API schemas
+        const name = (
+            country.names?.common || 
+            country.name?.common || 
+            country.name || 
+            ""
+        ).toLowerCase();
+        
         const countryRegion = (country.region || "").toLowerCase();
+        const population = country.population || 0;
 
-        if (searchLower && !countryName.includes(searchLower)) {
-            return false;
-        }
+        const matchesSearch =
+            !searchTerm ||
+            name.toLowerCase().includes(searchTerm.toLowerCase().trim());
+        const matchesRegion =
+            !region || countryRegion.toLowerCase() === region.toLowerCase();
+        const matchesPopulation = minPopulation === "" || population >= Number(minPopulation);
 
-        if (regionLower) {
-            if (countryRegion !== regionLower) {
-                return false;
-            }
-        }
-
-        if (typeof minPopulation === "number") {
-            if ((country.population || 0) < minPopulation) {
-                return false;
-            }
-        }
-
-        return true;
+        return matchesSearch && matchesRegion && matchesPopulation;
     });
 }
 
 // Apply the filters and update the displayed country cards
 function applyFilters(resetDisplayCount = true) {
+    // Reset display count back to 12 whenever filters change
     if (resetDisplayCount) {
         displayCount = INITIAL_DISPLAY_COUNT;
     }
-
+    
     const searchInput = document.getElementById("search-input");
     const regionSelect = document.getElementById("region-select");
     const minPopulationInput = document.getElementById("min-population");
@@ -210,89 +382,29 @@ function applyFilters(resetDisplayCount = true) {
     }
 
     const filteredCountries = filterData(searchTerm, region, minPopulation);
+
     populateCountryCards(filteredCountries);
     updateShowMoreButton(filteredCountries);
 }
 
-// Populate the country cards based on the filtered data
-function populateCountryCards(countries) {
-    // Get the container element where the country cards will be displayed
-    const countryCardsContainer = document.getElementById(
-        "country-cards-container",
-    );
-
-    if (countryCardsContainer) {
-        countryCardsContainer.innerHTML = "";
-    }
-
-    // Check if the countries array is empty and display an error message if it is
-    if (!countries || countries.length === 0) {
-        if (countryCardsContainer) {
-            countryCardsContainer.innerHTML =
-                "<p class='error-message'>No countries found. Please try a different search or selection.</p>";
-        }
-
-        return;
-    }
-
-    const loopCounter = Math.min(displayCount, countries.length);
-
-    for (let i = 0; i < loopCounter; i++) {
-        // Get the current country from the array
-        const country = countries[i];
-
-        // Create a card element for each country
-        const card = document.createElement("div");
-
-        // Add a class to the card for styling purposes
-        card.classList.add("country-card");
-
-        // Create elements for the card
-        const flagImg = document.createElement("img");
-        const countryName = document.createElement("h2");
-        const capital = document.createElement("p");
-        const population = document.createElement("p");
-        const region = document.createElement("p");
-
-        // Append elements to the card
-        flagImg.src = country.flags.png;
-        flagImg.alt = country.name.common;
-        countryName.innerHTML = country.name.common;
-        capital.innerHTML = `<strong>Capital:</strong> ${country.capital}`;
-        population.innerHTML = `<strong>Population:</strong> ${country.population.toLocaleString()}`;
-        region.innerHTML = `<strong>Region:</strong> ${country.region}`;
-
-        card.appendChild(flagImg);
-        card.appendChild(countryName);
-        card.appendChild(capital);
-        card.appendChild(population);
-        card.appendChild(region);
-
-        // Make the card clickable and navigate to the details page
-        card.style.cursor = "pointer";
-        card.addEventListener("click", () => countryCardHandler(country));
-
-        if (countryCardsContainer) {
-            countryCardsContainer.appendChild(card);
-        }
-    }
-}
-
+// Update the "Show More" button based on the number of filtered countries
 function updateShowMoreButton(filteredCountries) {
     const showMoreButton = document.getElementById("show-more");
+
     if (!showMoreButton) {
         return;
     }
 
-    if (
-        !filteredCountries ||
-        filteredCountries.length <= INITIAL_DISPLAY_COUNT
-    ) {
+    // Hide button if dataset has 0 or 1 item
+    if (!filteredCountries || filteredCountries.length <= 12) {
         showMoreButton.style.display = "none";
         return;
     }
 
+    // Always keep the button visible if there are multiple cards
     showMoreButton.style.display = "block";
+
+    // Change button text based on whether all items are showing
     if (displayCount >= filteredCountries.length) {
         showMoreButton.textContent = "Show Less";
     } else {
@@ -300,7 +412,7 @@ function updateShowMoreButton(filteredCountries) {
     }
 }
 
-// Increment the number of filtered countries displayed by 10
+// Increment the number of filtered data displayed by 10
 function showMoreHandler() {
     const searchInput = document.getElementById("search-input");
     const regionSelect = document.getElementById("region-select");
@@ -311,16 +423,20 @@ function showMoreHandler() {
     const minPopulation = minPopulationInput ? minPopulationInput.value : "";
     const filteredCountries = filterData(searchTerm, region, minPopulation);
 
-    // If all countries are currently displayed, reset to initial count. Otherwise, show more.
+    if (!Array.isArray(filteredCountries) || !filteredCountries.length) {
+        return;
+    }
+
     if (displayCount >= filteredCountries.length) {
         displayCount = INITIAL_DISPLAY_COUNT;
     } else {
         displayCount = Math.min(
-            displayCount + displayIncrement,
-            filteredCountries.length,
+            displayCount + displayIncrement, 
+            filteredCountries.length
         );
     }
 
+    // Render remaining cards without resetting displayCount
     applyFilters(false);
 }
 
@@ -335,7 +451,6 @@ function populateDetailsPage() {
     const countryCapital = document.getElementById("country-capital");
     const countryPopulation = document.getElementById("country-population");
     const countryRegion = document.getElementById("country-region");
-    const countrySubregion = document.getElementById("country-subregion");
     const countryLanguages = document.getElementById("country-languages");
     const countryCurrencies = document.getElementById("country-currencies");
 
@@ -355,13 +470,10 @@ function populateDetailsPage() {
     if (countryRegion) {
         countryRegion.textContent = params.region || "";
     }
-    if (countrySubregion) {
-        countrySubregion.textContent = params.subregion || "";
-    }
     if (countryLanguages) {
-        countryLanguages.textContent = params.languages || "";
+        countryLanguages.textContent = params.languages;
     }
-    
+
     if (countryCurrencies) {
         countryCurrencies.textContent = params.currencies || "";
     }
@@ -403,5 +515,4 @@ function setupFilterListeners() {
 }
 
 setupFilterListeners();
-applyFilters();
 setupDetailsPage();
