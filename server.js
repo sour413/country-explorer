@@ -32,14 +32,14 @@ app.get("/countries", async (req, res) => {
     }
 });
 
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(__dirname));
 
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "index.html"));
+    res.sendFile(path.join(__dirname, "index.html"));
 });
 
 app.get("/details", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "details.html"));
+    res.sendFile(path.join(__dirname, "details.html"));
 });
 
 app.use((req, res) => {
