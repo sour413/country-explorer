@@ -1,0 +1,37 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20' # Express 5 requires modern Node.js (18+)
+        cache: 'npm'
+
+    # Install production & dev dependencies (express, helmet, gh-pages)
+    - name: Install project dependencies
+      run: npm install
+
+    # Install nodemon globally so "npm start" works without hanging or erroring
+    - name: Install nodemon globally
+      run: npm install -g nodemon
+
+    # Smoke Test: Starts your server, checks if it responds, then shuts it down cleanly
+    - name: Smoke test server start
+      run: |
+        npm start &
+        sleep 5
+        curl -f http://localhost:3000 || exit 1
+        pkill -f nodemon
