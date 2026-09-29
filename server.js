@@ -4,7 +4,7 @@ const path = require("path");
 const { fetchCountries } = require("./countries-services");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(
     helmet.contentSecurityPolicy({
@@ -12,12 +12,12 @@ app.use(
             defaultSrc: ["'self'"],
             connectSrc: [
                 "'self'",
-                "http://localhost:3000",
-                "ws://localhost:3000",
+                `http://localhost:${PORT}`,
+                `ws://localhost:${PORT}`,
             ],
             scriptSrc: ["'self'"],
             styleSrc: ["'self'"],
-            imgSrc: ["'self'", "data:", "https:", "http://localhost:3000"],
+            imgSrc: ["'self'", "data:", "https:", `http://localhost:${PORT}`],
         },
     }),
 );
