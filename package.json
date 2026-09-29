@@ -19,6 +19,7 @@
     "homepage": "https://github.com/sour413/country-explorer#readme",
     "description": "",
     "dependencies": {
+        "cors": "^2.8.6",
         "express": "^5.2.1",
         "helmet": "^8.3.0"
     },
