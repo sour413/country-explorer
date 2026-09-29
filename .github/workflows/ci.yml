@@ -33,5 +33,5 @@ jobs:
       run: |
         npm start &
         sleep 5
-        curl -f http://localhost:${PORT} || exit 1
+        curl -f http://localhost:3000 || exit 1
         pkill -f nodemon
