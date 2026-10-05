@@ -26,7 +26,7 @@ async function fetchData() {
         }
 
         const response = await fetch(
-            "http://localhost:3000/countries",
+            "https://country-explorer-7ql2.onrender.com/countries",
         );
 
         if (!response.ok) {
