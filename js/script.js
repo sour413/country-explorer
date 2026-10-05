@@ -25,9 +25,7 @@ async function fetchData() {
             showMoreBtn.style.display = "none";
         }
 
-        const response = await fetch(
-            "https://country-explorer-7ql2.onrender.com/countries",
-        );
+        const response = await fetch("/countries");
 
         if (!response.ok) {
             throw new Error("HTTP error! Status: " + response.status);
