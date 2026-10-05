@@ -25,7 +25,9 @@ async function fetchData() {
             showMoreBtn.style.display = "none";
         }
 
-        const response = await fetch("/countries");
+        const response = await fetch(
+            "http://localhost:3000/countries",
+        );
 
         if (!response.ok) {
             throw new Error("HTTP error! Status: " + response.status);
