@@ -1,10 +1,22 @@
 const helmet = require("helmet");
 const express = require("express");
 const path = require("path");
+const cors = require("cors");
 const { fetchCountries } = require("./countries-services");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Enable CORS for cross-origin local requests
+app.use(
+    cors({
+        origin: [
+            "http://localhost:3000",
+            "https://country-explorer-7ql2.onrender.com",
+            "https://sour413.github.io"
+        ],
+    }),
+);
 
 app.use(
     helmet.contentSecurityPolicy({

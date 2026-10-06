@@ -27,7 +27,7 @@ async function fetchData() {
         }
 
         const response = await fetch(
-            "https://country-explorer-7ql2.onrender.com/countries",
+            "/countries",
         );
 
         if (!response.ok) {
