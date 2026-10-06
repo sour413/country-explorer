@@ -1,13 +1,10 @@
 const helmet = require("helmet");
 const express = require("express");
 const path = require("path");
-const cors = require("cors");
 const { fetchCountries } = require("./countries-services");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-app.use(cors({ origin: "*" }));
 
 app.use(
     helmet.contentSecurityPolicy({
@@ -17,10 +14,9 @@ app.use(
                 "'self'",
                 `http://localhost:${PORT}`,
                 `ws://localhost:${PORT}`,
+                "https://country-explorer-7ql2.onrender.com/countries",
             ],
-            scriptSrc: ["'self'"],
-            styleSrc: ["'self'"],
-            imgSrc: ["'self'", "data:", "https:", `http://localhost:${PORT}`],
+            imgSrc: ["'self'", "data:", "https:"],
         },
     }),
 );

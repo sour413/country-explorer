@@ -2,7 +2,8 @@
 const INITIAL_DISPLAY_COUNT = 12;
 const displayIncrement = 12; // Fixes ReferenceError: displayIncrement is not defined
 let displayCount = INITIAL_DISPLAY_COUNT;
-let allCountries = [];
+let allCountriesData = [];
+
 
 // function to fetch data from the server-side endpoint
 async function fetchData() {
@@ -25,7 +26,9 @@ async function fetchData() {
             showMoreBtn.style.display = "none";
         }
 
-        const response = await fetch("/countries");
+        const response = await fetch(
+            "https://country-explorer-7ql2.onrender.com/countries",
+        );
 
         if (!response.ok) {
             throw new Error("HTTP error! Status: " + response.status);
